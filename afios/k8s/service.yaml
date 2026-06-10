@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: afios-api-service
+spec:
+  type: ClusterIP
+  selector:
+    app: afios-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
