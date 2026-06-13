@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from afios.common.security import verify_password, create_access_token, get_password_hash
-from afios.common.config import settings
 
 router = APIRouter()
 
-# Mock user database
+# ✅ FIXED USER DB (no functions inside dict)
 fake_users_db = {
     "admin": {
         "username": "admin",
@@ -20,12 +19,21 @@ fake_users_db = {
 @router.post("/login")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user_dict = fake_users_db.get(form_data.username)
+
     if not user_dict:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
+
     if not verify_password(form_data.password, user_dict["hashed_password"]):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    
+
     access_token = create_access_token(
-        data={"sub": user_dict["username"], "tenant_id": user_dict["tenant_id"]}
+        data={
+            "sub": user_dict["username"],
+            "tenant_id": user_dict["tenant_id"]
+        }
     )
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer"
+    }
