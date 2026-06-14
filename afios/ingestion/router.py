@@ -17,13 +17,12 @@ async def ingest_transaction(
     request: Request,
     transaction: TransactionIngest,
     background_tasks: BackgroundTasks,
-    # user: dict = Depends(get_current_user) # Uncomment when auth is strictly enforced
+    user: dict = Depends(get_current_user)
 ):
     """
     Ingest a new transaction and publish it to the event stream for processing.
     """
-    # tenant_id = user.get("tenant_id", "default")
-    tenant_id = request.headers.get("X-Tenant-ID", "default")
+    tenant_id = user.get("tenant_id") or request.headers.get("X-Tenant-ID", "default")
     
     # Send to background task to avoid blocking API response
     background_tasks.add_task(publish_to_kafka, transaction, tenant_id)

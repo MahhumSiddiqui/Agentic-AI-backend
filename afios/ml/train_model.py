@@ -11,6 +11,7 @@ logger = logging.getLogger("AFIOS.ML_Train")
 
 def train_fraud_model():
     # 1. Load the dataset
+
     data_path = os.path.join(os.path.dirname(__file__), "..", "data", "creditcard.csv")
     data_path = os.path.abspath(data_path)
     
