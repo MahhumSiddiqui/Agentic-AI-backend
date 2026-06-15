@@ -94,4 +94,14 @@ def train_fraud_model():
     logger.info(f"Model and feature schema saved to {model_path}")
 
 if __name__ == "__main__":
+    """
+Training utility.
+
+This script is used only for model retraining.
+
+AFIOS runtime scoring uses:
+afios/models/fraud_model.pkl
+
+The dataset is NOT required for normal deployment.
+"""
     train_fraud_model()

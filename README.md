@@ -26,3 +26,28 @@ Navigate to `http://localhost:8000/docs`
 - SQLAlchemy / SQLModel async drivers for PostgreSQL.
 - Celery / Kafka for asynchronous job processing and streaming.
 - OpenTelemetry readiness for Observability.
+
+## Model Architecture
+
+AFIOS uses a pre-trained XGBoost fraud detection model stored as:
+
+afios/models/fraud_model.pkl
+
+Runtime scoring endpoints load the model directly and do not require the original training dataset.
+
+The creditcard.csv dataset is only required when retraining the model.
+
+For normal deployment:
+
+* No AWS configuration is required
+* No S3 access is required
+* No dataset download is required
+
+Users can run AFIOS directly using Docker:
+
+docker compose up -d
+
+and access:
+
+http://localhost:8000/docs
+
