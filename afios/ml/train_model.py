@@ -6,20 +6,26 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score, classification_report
 import xgboost as xgb
 
+from afios.data.dataset_loader import load_or_download_dataset, DatasetLoadError
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger("AFIOS.ML_Train")
 
 def train_fraud_model():
-    # 1. Load the dataset
-
-    data_path = os.path.join(os.path.dirname(__file__), "..", "data", "creditcard.csv")
-    data_path = os.path.abspath(data_path)
-    
-    logger.info(f"Loading dataset from {data_path}")
-    if not os.path.exists(data_path):
-        logger.error(f"Dataset not found at {data_path}")
-        return
+    """
+    Train fraud detection model using the production-friendly dataset loader.
+    WARNING: This training function is ONLY for model retraining and should not
+    be executed in the runtime deployment environment.
+    """
+    # 1. Load the dataset using the dedicated production-friendly loader
+    logger.info("Acquiring dataset...")
+    try:
+        data_path = load_or_download_dataset()
+    except DatasetLoadError as e:
+        logger.error(f"Training pipeline aborted: {e}")
+        raise
         
+    logger.info(f"Loading dataset from {data_path}")
     df = pd.read_csv(data_path)
     
     # 2. Prepare features and target
