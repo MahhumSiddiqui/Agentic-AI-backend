@@ -12,21 +12,54 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Set up CORS
+# -----------------------
+# CORS (PRODUCTION SAFE)
+# -----------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://fraud-nexus-guard.lovable.app",  # frontend
+        "http://localhost:3000",                  # local dev
+        "http://localhost:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include routers
-app.include_router(gateway_router, prefix=f"{settings.API_V1_STR}/auth", tags=["Gateway & Auth"])
-app.include_router(ingestion_router, prefix=f"{settings.API_V1_STR}/transactions", tags=["Ingestion"])
-app.include_router(scoring_router, prefix="/scoring", tags=["Scoring Engine"])
-app.include_router(explainability_router, prefix="/explainability", tags=["Explainability Engine"])
+# -----------------------
+# ROUTES
+# -----------------------
+app.include_router(
+    gateway_router,
+    prefix=f"{settings.API_V1_STR}/auth",
+    tags=["Gateway & Auth"]
+)
 
+app.include_router(
+    ingestion_router,
+    prefix=f"{settings.API_V1_STR}/transactions",
+    tags=["Ingestion"]
+)
+
+app.include_router(
+    scoring_router,
+    prefix="/scoring",
+    tags=["Scoring Engine"]
+)
+
+app.include_router(
+    explainability_router,
+    prefix="/explainability",
+    tags=["Explainability Engine"]
+)
+
+# -----------------------
+# HEALTH CHECK
+# -----------------------
 @app.get("/health", tags=["System"])
 async def health_check():
-    return {"status": "ok", "version": "1.0.0"}
+    return {
+        "status": "ok",
+        "version": "1.0.0"
+    }
