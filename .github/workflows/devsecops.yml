@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -38,7 +40,12 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: 0
 
-- name: SonarCloud Scan
+      - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=Agentic-AI-backend
+            -Dsonar.organization=mahhumsiddiqui
+            -Dsonar.sources=afios
