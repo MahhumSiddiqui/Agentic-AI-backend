@@ -41,11 +41,12 @@ jobs:
           exit-code: 0
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=Agentic-AI-backend
-            -Dsonar.organization=mahhumsiddiqui
-            -Dsonar.sources=afios
+  uses: SonarSource/sonarqube-scan-action@v5
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  with:
+    projectBaseDir: .
+    args: >
+      -Dsonar.projectKey=Agentic-AI-backend
+      -Dsonar.organization=mahhumsiddiqui
+      -Dsonar.sources=afios
