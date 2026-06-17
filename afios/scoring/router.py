@@ -1,13 +1,31 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from typing import Dict, Any
 from afios.scoring.engine import FraudScoringEngine
+from afios.gateway.auth import SECRET_KEY, ALGORITHM
+from jose import jwt, JWTError
 import random
 
 router = APIRouter()
 engine = FraudScoringEngine()
 
+# -----------------------
+# SECURITY
+# -----------------------
+security = HTTPBearer()
 
+def get_current_user(token: str = Depends(security)):
+    try:
+        payload = jwt.decode(token.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
+# -----------------------
+# MODELS
+# -----------------------
 class ScoringRequest(BaseModel):
     transaction: Dict[str, Any]
     features: Dict[str, Any] = {}
@@ -19,11 +37,10 @@ class ScoringResponse(BaseModel):
     input_transaction: Dict[str, Any]
 
 
+# -----------------------
+# FEATURE FALLBACK
+# -----------------------
 def generate_pseudo_features(transaction: Dict[str, Any]) -> Dict[str, float]:
-    """
-    SAFE fallback feature generator so SHAP always changes
-    even if frontend sends empty features.
-    """
     amount = float(transaction.get("amount", 0))
 
     return {
@@ -36,9 +53,14 @@ def generate_pseudo_features(transaction: Dict[str, Any]) -> Dict[str, float]:
     }
 
 
+# -----------------------
+# PROTECTED ENDPOINT
+# -----------------------
 @router.post("/predict", response_model=ScoringResponse)
-async def predict_fraud(request: ScoringRequest):
-    # 👇 FIX: ensure features never empty
+async def predict_fraud(
+    request: ScoringRequest,
+    user: str = Depends(get_current_user)
+):
     features = request.features
 
     if not features:
