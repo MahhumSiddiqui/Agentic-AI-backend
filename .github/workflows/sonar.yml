@@ -22,4 +22,4 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
           args: >
-            -Dsonar.projectKey=Agentic-AI-backend
+            -Dsonar.projectKey=agentic-ai-backend
