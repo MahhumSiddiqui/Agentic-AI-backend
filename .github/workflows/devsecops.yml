@@ -46,7 +46,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=mahhumsiddiqui_agentic-ai-backend
-            -Dsonar.organization=mahhumsiddiqui
-            -Dsonar.sources=afios
+         args: >
+          -Dsonar.projectKey=mahhumsiddiqui_agentic-ai-backend
+          -Dsonar.sources=.
